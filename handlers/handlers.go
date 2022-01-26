@@ -15,7 +15,8 @@ func Handlers() {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
+
+		return c.SendString("Hello, World 👋! \n please try /login or /register")
 	})
 
 	app.Post("/register", func(c *fiber.Ctx) error {
@@ -84,8 +85,40 @@ func Handlers() {
 	})
 
 	app.Get("/login", func(c *fiber.Ctx) error {
+		user := model.Register{}
+		var id = 0
 
-		return c.JSON("Login")
+		if helpers.IsEmpty(c.FormValue("email")) || helpers.IsEmpty(c.FormValue("password")) {
+			return c.Status(400).JSON(&fiber.Map{
+				"message": "You must fill in all fields",
+				"success": false,
+			})
+		}
+		rows, err := db.DB().Query("Select * from user where email = ?", c.FormValue("email"))
+		if err != nil {
+			log.Fatal(err)
+			return c.Status(400).JSON(&fiber.Map{
+				"message": err,
+				"success": false,
+			})
+		}
+
+		for rows.Next() {
+			switch err := rows.Scan(&id, &user.Email, &user.Password); err {
+			case sql.ErrNoRows:
+				return c.Status(500).JSON("ErrNoRows")
+			case nil:
+				if helpers.CheckPasswordHash(c.FormValue("password"), user.Password) {
+					return c.Status(201).JSON("Success")
+				} else {
+					return c.Status(400).JSON("Password is not correct")
+				}
+
+			default:
+				return c.Status(500).JSON("Error")
+			}
+		}
+		return c.Status(400).JSON("Account not exist")
 	})
 
 	log.Fatal(app.Listen(":80"))
