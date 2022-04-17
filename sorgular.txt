@@ -1,0 +1,15 @@
+
+// kullanıcı ve fotoğrafları
+SELECT u.*,b.image_path from deneme.users as u join deneme.images as b on u.id = b.user_id where b.type = 0
+
+// kullanıcı bilgileri ve profil fotosu
+SELECT u.*,b.image_path FROM deneme.users as u join deneme.images as b on b.user_id = u.id where b.type = 1 limit 1;
+
+// kullanıcı bilgileri ve fotoğrafları ayrıca fotoğraf type bilgisi 0 = genel 1 = profil
+SELECT u.*,b.image_path,b.type FROM deneme.users as u join deneme.images as b on b.user_id = u.id 
+
+// kullanıcı bilgileri düzgün format
+SELECT u.first_name,u.last_name,u.email,u.phone_number,u.gender,u.latitude,u.longitude,u.birthday FROM deneme.users as u where id = 1
+
+
+SELECT u.first_name,u.last_name,u.email,u.phone_number,u.gender,u.latitude,u.longitude,u.birthday,b.image_path,b.type FROM deneme.users as u left join deneme.images as b on b.user_id = u.id where u.email in ("merve@gmail.com")

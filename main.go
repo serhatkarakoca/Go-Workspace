@@ -2,10 +2,10 @@ package main
 
 import (
 	"go-login/db"
-	"go-login/handlers"
+	"go-login/router"
 )
 
 func main() {
 	db.Connection()
-	handlers.Handlers()
+	router.Routers()
 }

@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"net/mail"
+	"strings"
 	"unicode"
 )
 
@@ -23,6 +24,20 @@ func IsEmail(data string) bool {
 
 }
 
+// GetStringInBetween Returns empty string if no start string found
+func GetStringInBetween(str string, start string, end string) (result string) {
+	s := strings.Index(str, start)
+	if s == -1 {
+		return
+	}
+	s += len(start)
+	e := strings.Index(str[s:], end)
+	if e == -1 {
+		return
+	}
+	return str[s : s+e]
+}
+
 func IsPasswordStrong(pass string) FieldError {
 	var letters = 0
 	var number, upper, special bool
@@ -30,6 +45,7 @@ func IsPasswordStrong(pass string) FieldError {
 		switch {
 		case unicode.IsNumber(c):
 			number = true
+			letters++
 		case unicode.IsUpper(c):
 			upper = true
 			letters++
@@ -40,9 +56,9 @@ func IsPasswordStrong(pass string) FieldError {
 		default:
 		}
 	}
-	if letters < 7 {
+	if letters < 6 {
 		return FieldError{
-			Message: "Password must be at least 7 characters",
+			Message: "Password must be at least 6 characters",
 			Success: false,
 		}
 	} else if !number {
